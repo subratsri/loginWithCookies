@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="author" content="Subrat Srivastava">
+	<meta name="keywords" content="HTML,CSS,JavaScript,JavaScript cookie">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+	<title>Subrat Srivastava: Login/Signup</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script type="text/javascript">
+
+  		var mainObj;
+		$(document).ready(function() {
+ 		var xhttp = new XMLHttpRequest();
+  		xhttp.onreadystatechange = function() {
+  			var htmlToReplace = '<option></option>';
+ 			if (this.readyState == 4 && this.status == 200) {
+      				var obj = JSON.parse(this.responseText);
+     				mainObj = obj;
+					Object.entries(obj).forEach(([key, value])=> {
+						htmlToReplace = htmlToReplace.concat('<option value=\''+key+'\'>'+value["name"]+'</option>');
+					})
+					document.getElementById("countryName").innerHTML = htmlToReplace;
+    		}
+  		};
+  		xhttp.open("GET", "https://raw.githubusercontent.com/khkwan0/countryCityStateJson/master/lib/compiledCities.json", true);
+  		xhttp.send();
+		});
+
+		function stateChange(){
+			stateToReplace = '<option></option>'
+				var x = document.getElementById("countryName").value;
+				
+  				// console.log(mainObj);
+  				 // console.log(mainObj[x].states);
+  				 Object.entries(mainObj[x].states).forEach((key,value)=>{
+  				 	stateToReplace = stateToReplace.concat('<option value=\''+key['0']+'\'>'+key['0']+'</option>');
+  				 })
+  				 // console.log(stateToReplace);
+  				 document.getElementById("stateName").innerHTML = stateToReplace;
+  		}
+
+  		function cityChange(){
+  			cityToReplace = '<option></option>';
+  				var x = document.getElementById("stateName").value;
+  				// console.log(x);
+  				var y = document.getElementById("countryName").value;
+  				 // console.log(mainObj[y].states[x]);
+  				 Object.entries(mainObj[y].states[x]).forEach((key,value)=>{
+  				 		cityToReplace = cityToReplace.concat('<option value=\''+key['1'].name+'\'>'+key['1'].name+'</option>')
+  				 	// console.log(key['1'].name);
+  				 	// console.log(value);
+  				 })
+  				 document.getElementById("cityName").innerHTML = cityToReplace;
+
+  		}
+  		function signupFun(){
+  			var fullName = document.getElementById('fullName').value;
+  			var email = document.getElementById('email').value;
+  			var password = document.getElementById('password').value;
+  			var dob = document.getElementById('dob').value;
+  			var countryName = document.getElementById('countryName').value;
+  			var stateName = document.getElementById('stateName').value;
+  			var cityName = document.getElementById('cityName').value;
+  			if(fullName != '' && email != '' && password != '' && dob != '' && countryName != '' && stateName != '' && cityName !=''){
+  				document.cookie = "fullName="+fullName;
+  				document.cookie = "email="+email;
+  				document.cookie = "password="+password;
+  				document.cookie = "dob="+dob;
+  				document.cookie = "countryName="+countryName;
+  				document.cookie = "stateName="+stateName;
+  				document.cookie = "cityName="+cityName;
+  				alert("You are good to go");
+  				window.location = "home.html";
+  			}else{
+  				alert("All fields are required to proceed");
+  			}
+  		}
+  		var fullName;
+		var email;
+		var password;
+		var dob;
+		var countryName;
+		var stateName;
+		var cityName;
+		var accountCounter=0;
+  		function loginFun(){
+  			var allCookies = document.cookie;
+			allCookiesArray = allCookies.split(';');
+			for(var i = 0; i<allCookiesArray.length;i++){
+				var cookiePair = allCookiesArray[i].split("=");
+				if("fullName" == cookiePair[0].trim()) {
+					fullName = cookiePair[1];
+        		}if("email" == cookiePair[0].trim()) {
+					email = cookiePair[1];
+        		}if("password" == cookiePair[0].trim()) {
+					password = cookiePair[1];
+        		}if("dob" == cookiePair[0].trim()) {
+					dob = cookiePair[1];
+        		}if("countryName" == cookiePair[0].trim()) {
+					countryName = cookiePair[1];
+        		}if("stateName" == cookiePair[0].trim()) {
+					stateName = cookiePair[1];
+        		}if("cityName" == cookiePair[0].trim()) {
+					cityName = cookiePair[1];
+        		}
+			}
+			var currentEmail = document.getElementById('loginEmail').value;
+			var currentPass = document.getElementById('loginPass').value;
+			if(currentEmail == '' || currentPass == ''){
+				alert("Email ID and Password are required");
+			}else if(currentEmail == email && currentPass == password){
+				alert("Welcome back");
+  				window.location = "home.html";
+			}else{
+				alert("Wrong Email ID Password combination");
+			}
+  		}
+  		function checkPreviousLogin(){
+  			var allCookies = document.cookie;
+			allCookiesArray = allCookies.split(';');
+			for(var i = 0; i<allCookiesArray.length;i++){
+				var cookiePair = allCookiesArray[i].split("=");
+				if("email" == cookiePair[0].trim()) {
+					email = cookiePair[1];
+        		}if("accountCounter" == cookiePair[0].trim()) {
+					accountCounter = cookiePair[1];
+        		}
+			}
+			if(email != '' && accountCounter==1){
+				alert("Already logged in");
+  				window.location = "home.html";
+			}
+  		}
+	</script>
+</head>
+<body style="background-image: url('login_bg.jpg');" onload="checkPreviousLogin()">
+	<div style="width:250px; margin:0 auto;">
+		<img src='ameyo-logo.png' alt='Ameyo Logo' style='width:250px;height:70px;'>
+	</div>
+
+	<div  style="width: 55%;float: left;padding-left: 150px;">
+	<fieldset>
+		<legend><h2>Signup</h2></legend>
+	<form>
+		Full Name:<input type="text" name="fullName" id="fullName" required><br /><br />
+		Email:<input type="email" name="email" id="email" required><br /><br />
+		Password:<input type="password" name="password" id="password" required><br /><br />
+		Date of birth:<input type="date" name="dob" id="dob" required><br /><br />
+		Country: <select id="countryName" onchange="stateChange()" required></select><br /><br />
+		State: <select id="stateName" onchange="cityChange()" required><option>---SELECT COUNTRY---</option></select><br /><br />
+		City: <select id="cityName" required><option>---SELECT STATE---</option></select><br />
+<br />
+			<button type="button" onclick="signupFun()">Signup</button><br /><br />
+	</form>
+	</fieldset>
+	</div>
+	<div style="float: right; width: 30%;">
+		<fieldset>
+			<legend><h2>Login</h2></legend>
+		<form>
+			Email: <input type="email" id="loginEmail"><br /><br />
+			Password: <input type="password" id="loginPass"><br /><br />
+			<button type="button" onclick="loginFun()">Login</button><br /><br />
+
+		</form>
+		</fieldset>
+	</div>
+	<script type="text/javascript">
+		
+	</script>
+	<div></div>
+</body>
+</html>

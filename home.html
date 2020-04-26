@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Subrat Srivastava: Home</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		var fullName;
+		var email;
+		var password;
+		var dob;
+		var countryName;
+		var stateName;
+		var cityName;
+    var accountCounter=1;
+		function timeWithCookie(){
+			var allCookies = document.cookie;
+			allCookiesArray = allCookies.split(';');
+			console.log(allCookiesArray);
+			for(var i = 0; i<allCookiesArray.length;i++){
+				var cookiePair = allCookiesArray[i].split("=");
+				if("fullName" == cookiePair[0].trim()) {
+					fullName = cookiePair[1];
+        		}if("email" == cookiePair[0].trim()) {
+					email = cookiePair[1];
+        		}if("password" == cookiePair[0].trim()) {
+					password = cookiePair[1];
+        		}if("dob" == cookiePair[0].trim()) {
+					dob = cookiePair[1];
+        		}if("countryName" == cookiePair[0].trim()) {
+					countryName = cookiePair[1];
+        		}if("stateName" == cookiePair[0].trim()) {
+					stateName = cookiePair[1];
+        		}if("cityName" == cookiePair[0].trim()) {
+					cityName = cookiePair[1];
+        		}
+			}
+			if(email == undefined){
+				alert("Invalid Login");
+  				window.location = "main.html";
+
+			}
+			document.getElementById('welcomeName').innerHTML = fullName;
+			document.getElementById('fullName').defaultValue = fullName;
+			document.getElementById('email').defaultValue = email;
+			document.getElementById('password').defaultValue = password;
+			document.getElementById('dob').defaultValue = dob;
+		}
+		var mainObj;
+		$(document).ready(function() {
+ 		var xhttp = new XMLHttpRequest();
+  		xhttp.onreadystatechange = function() {
+  			var htmlToReplace = '<option></option>';
+ 			if (this.readyState == 4 && this.status == 200) {
+      				var obj = JSON.parse(this.responseText);
+     				mainObj = obj;
+					Object.entries(obj).forEach(([key, value])=> {
+						if(key== countryName){
+							htmlToReplace = htmlToReplace.concat('<option selected value=\''+key+'\'>'+value["name"]+'</option>');
+						}else{
+							htmlToReplace = htmlToReplace.concat('<option value=\''+key+'\'>'+value["name"]+'</option>');
+						}
+					})
+					document.getElementById("countryName").innerHTML = htmlToReplace;
+					stateChange();
+					cityChange();
+    		}
+  		};
+  		xhttp.open("GET", "https://raw.githubusercontent.com/khkwan0/countryCityStateJson/master/lib/compiledCities.json", true);
+  		xhttp.send();
+		});
+
+		function stateChange(){
+			stateToReplace = '<option></option>'
+				var x = document.getElementById("countryName").value;
+				
+  				// console.log(mainObj);
+  				 // console.log(mainObj[x].states);
+  				 Object.entries(mainObj[x].states).forEach((key,value)=>{
+  				 	if(key['0']==stateName){
+  				 		stateToReplace = stateToReplace.concat('<option selected value=\''+key['0']+'\'>'+key['0']+'</option>');
+  				 	}else{
+  				 		stateToReplace = stateToReplace.concat('<option value=\''+key['0']+'\'>'+key['0']+'</option>');
+  				 	}
+  				 })
+  				 // console.log(stateToReplace);
+  				 document.getElementById("stateName").innerHTML = stateToReplace;
+  		}
+
+  		function cityChange(){
+  			cityToReplace = '<option></option>';
+  				var x = document.getElementById("stateName").value;
+  				// console.log(x);
+  				var y = document.getElementById("countryName").value;
+  				 // console.log(mainObj[y].states[x]);
+  				 Object.entries(mainObj[y].states[x]).forEach((key,value)=>{
+  				 	if(key['1'].name == cityName){
+  				 		cityToReplace = cityToReplace.concat('<option selected value=\''+key['1'].name+'\'>'+key['1'].name+'</option>');
+  				 	}else{
+  				 		cityToReplace = cityToReplace.concat('<option value=\''+key['1'].name+'\'>'+key['1'].name+'</option>');
+  				 	}
+  				 	// console.log(key['1'].name);
+  				 	// console.log(value);
+  				 })
+  				 document.getElementById("cityName").innerHTML = cityToReplace;
+
+  		}
+		function updateFun(){
+  			var fullName = document.getElementById('fullName').value;
+  			var email = document.getElementById('email').value;
+  			var password = document.getElementById('password').value;
+  			var dob = document.getElementById('dob').value;
+  			var countryName = document.getElementById('countryName').value;
+  			var stateName = document.getElementById('stateName').value;
+  			var cityName = document.getElementById('cityName').value;
+  			if(fullName != '' && email != '' && password != '' && dob != '' && countryName != '' && stateName != '' && cityName !=''){
+  				document.cookie = "fullName="+fullName;
+  				document.cookie = "email="+email;
+  				document.cookie = "password="+password;
+  				document.cookie = "dob="+dob;
+  				document.cookie = "countryName="+countryName;
+  				document.cookie = "stateName="+stateName;
+  				document.cookie = "cityName="+cityName;
+  				alert("Updated");
+  				window.location = "home.html";
+  			}else{
+  				alert("All fields are required to proceed");
+  			}
+  		}
+  		function logout(){		
+  			removeCookie('fullName');	
+			alert("logout");
+  			// window.location = "main.html";
+  		}
+
+  		function removeCookie(name) {   
+  				 var allCookies = document.cookie.split(';'); 
+                
+                // The "expire" attribute of every cookie is  
+                // Set to "Thu, 01 Jan 1970 00:00:00 GMT" 
+                if(fullName != '' && email != '' && password != '' && dob != '' && countryName != '' && stateName != '' && cityName !=''){
+  				document.cookie = "fullName="+fullName+";expires=Thu, 18 Dec 1997 12:00:00 UTC;";
+  				document.cookie = "email="+email+";expires=Thu, 18 Dec 1997 12:00:00 UTC;";
+  				document.cookie = "password="+password+";expires=Thu, 18 Dec 1997 12:00:00 UTC;";
+  				document.cookie = "dob="+dob+";expires=Thu, 18 Dec 1997 12:00:00 UTC;";
+  				document.cookie = "countryName="+countryName+";expires=Thu, 18 Dec 1997 12:00:00 UTC;";
+  				document.cookie = "stateName="+stateName+";expires=Thu, 18 Dec 1997 12:00:00 UTC;";
+  				document.cookie = "cityName="+cityName+";expires=Thu, 18 Dec 1997 12:00:00 UTC;";
+          document.cookie = "accountCounter="+accountCounter+";expires=Thu, 18 Dec 1997 12:00:00 UTC;";
+  				window.location = "main.html";
+  			}else{
+  				alert("Not allowed");
+  			}
+   
+		}
+    function loginAnother(){
+      document.cookie = "accountCounter="+accountCounter;
+    }
+	</script>
+</head>
+<body onload="timeWithCookie()" style="background-image: url('login_bg.jpg');">
+	<div style="width:250px; margin:0 auto;">
+		<img src='ameyo-logo.png' alt='Ameyo Logo' style='width:250px;height:70px;'>
+	</div>
+	<div  style="width: 55%;float: left;padding-left: 20%;">
+		<fieldset>
+			<legend><h2>Hi <span id="welcomeName"></span></h2>
+			</legend>
+			<h3>Welcome to Home Page <small><button onclick="logout()">Logout</button></small></h3>
+				<form>
+					Full Name:<input type="text" name="fullName" id="fullName" required><br /><br />
+					Email:<input type="email" name="email" id="email" required><br /><br />
+					Password:<input type="password" name="password" id="password" required><br /><br />
+					Date of birth:<input type="date" name="dob" id="dob" required><br /><br />
+					Country: <select id="countryName" onchange="stateChange()" required></select><br /><br />
+					State: <select id="stateName" onchange="cityChange()" required><option>---SELECT COUNTRY---</option></select><br /><br />
+					City: <select id="cityName" required><option>---SELECT STATE---</option></select><br />
+			<br />
+						<button type="button" onclick="updateFun()">Update</button>&nbsp;&nbsp;&nbsp;<button onclick="loginAnother()">Login to another account</button><br /><br />
+				</form>
+		</fieldset>
+	</div>
+</body>
+</html>
